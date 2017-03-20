@@ -1,5 +1,5 @@
 /*
- * CUInSpace Rocket Sequencer v0.1
+ * CUInSpace Rocket Sequencer v0.2 (attempts at decrapifying and ditching class)
  * It defines the basic framework for the programs that run on arduino-based rocket avionics system. 
  * It simulates what would be called a sequencer on a real rocket, providing time frame and 
  * starting certain actions based on a certain trigger (be it time-based or otherwise) and 
@@ -7,11 +7,11 @@
 ----------------------------------------
  * This is still in preliminary stage. Anyone is welcome to improve it!
  */
+//TODO: resolve timing problem 
 
 #ifndef ROCKET_SEQUENCER_H
 #define ROCKET_SEQUENCER_H
-#undef NULL
-#define NULL 0
+
 
 typedef unsigned short (*func_compare_t) (void);
 typedef void (*function_noarg_t) (void); 		
@@ -47,7 +47,7 @@ typedef struct { // pointers to functions to call before and up to rocket's each
 extern _event_t* sequence;
 extern unsigned char events;
 extern status_t _status;
-extern unsigned short timer; // the rocket sequencer timer in seconds (both count down and count up)
+extern short timer; // the rocket sequencer timer in seconds (both count down and count up)
 extern void initialize(unsigned char stages); //define rocket stages 
 extern void loadSequence(_event_t* event_name, function_2arg_t action, unsigned short arg1, unsigned short arg2,
 		status_t status_to_trigger ); // load a function onto the sequencer
@@ -69,10 +69,9 @@ extern void set_condition(func_compare_t cmp1, unsigned short cmp2,
 extern void set_condition(status_t rocket_status, status_t status_to_compare,
 		compare_t sign_input, _event_t* event_name); //function overload for statuses
 extern void run(); // start the sequencer (THE FLIGHT COMPUTER HAS TAKEN OVER THE COUNTDOWN)
-extern status_t getStatus();
-extern void setStatus(status_t status);
-extern void exec_event(_event_t event_name);
-extern unsigned short getTimer();
+extern status_t getStatus(); // GET the status of the rocket (as defined in enum status_t)
+extern void setStatus(status_t status); // set the status of the rocket
+extern short getTimer(); // get the time in milliseconds from the rocket timer
 
 
 

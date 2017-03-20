@@ -1,5 +1,5 @@
 /*
- * CUInSpace Rocket Sequencer v0.1
+ * CUInSpace Rocket Sequencer v0.2 (attempts at decrapifying and ditching class)
  * It defines the basic framework for the programs that run on arduino-based rocket avionics system. 
  * It simulates what would be called a sequencer on a real rocket, providing time frame and 
  * starting certain actions based on a certain trigger (be it time-based or otherwise) and 
@@ -8,16 +8,17 @@
  * This is still in preliminary stage. Anyone is welcome to improve it!
  */
  
-// TODO: SWITCH TO NON-CLASS MEMBERS
 
 #include "Arduino.h"
 #include "ROCKET_SEQUENCER.h"
+#undef NULL
+#define NULL 0
 
 // variable definitions
 _event_t* sequence = NULL;
 unsigned char events = 0;
 status_t _status = ROCKET_GROUND;
-unsigned short timer = 0;
+short timer = 0;
 
 //*******************************
 // GET the status of the rocket
@@ -202,11 +203,11 @@ void run() {
 	}
 	
 	if (getStatus() != ROCKET_ABORT) {
-		delay(1000);
+		delay(4);
 	}
 }
 
-unsigned short getTimer() {
+short getTimer() {
   return timer;
 }
 //*******************************
