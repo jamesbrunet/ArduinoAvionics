@@ -7,13 +7,12 @@
 ----------------------------------------
  * This is still in preliminary stage. Anyone is welcome to improve it!
  */
-//TODO: resolve timing problem 
 
 #ifndef ROCKET_SEQUENCER_H
 #define ROCKET_SEQUENCER_H
 
 
-typedef unsigned short (*func_compare_t) (void);
+typedef short (*func_compare_t) (void);
 typedef void (*function_noarg_t) (void); 		
 typedef void (*function_onearg_t) (unsigned short);
 typedef void (*function_2arg_t) (unsigned short, unsigned short);
@@ -35,8 +34,8 @@ typedef struct { // pointers to functions to call before and up to rocket's each
 	union{function_noarg_t function_noarg;
 		function_onearg_t function_onearg;
 		function_2arg_t function_twoarg;};
-	union{func_compare_t func_to_compare; status_t current_status;};
-	union{unsigned short cmp2; status_t status;};
+	func_compare_t func_to_compare;
+	union{short cmp2; status_t status;};
 	unsigned char arg1;
 	unsigned char arg2;
 	compare_t sign;
@@ -64,9 +63,9 @@ extern void loadSequence(_event_t* event_name,
 			  		      * countdown due to a plane from homeland security fouling
 			  		      * the range)
 			  		      */
-extern void set_condition(func_compare_t cmp1, unsigned short cmp2,
+extern void set_condition(func_compare_t cmp1, short cmp2,
 		compare_t sign_input, _event_t* event_name); // set the event's starting condition
-extern void set_condition(status_t rocket_status, status_t status_to_compare,
+extern void set_condition(status_t status_to_compare,
 		compare_t sign_input, _event_t* event_name); //function overload for statuses
 extern void run(); // start the sequencer (THE FLIGHT COMPUTER HAS TAKEN OVER THE COUNTDOWN)
 extern status_t getStatus(); // GET the status of the rocket (as defined in enum status_t)

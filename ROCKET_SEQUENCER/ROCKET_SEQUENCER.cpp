@@ -13,6 +13,7 @@
 #include "ROCKET_SEQUENCER.h"
 #undef NULL
 #define NULL 0
+#define TIMER_ERROR 10 // set timer tolerance to 10ms
 
 // variable definitions
 _event_t* sequence = NULL;
@@ -95,16 +96,15 @@ void loadSequence(_event_t* event_name,
 // the function defines the condition that the function executes
 // using unsigned shorts or statuses (sorry, only one condition can be put in)
 
-void set_condition(func_compare_t cmp1, unsigned short cmp2,
+void set_condition(func_compare_t cmp1, short cmp2,
 			   compare_t sign_input, _event_t* event_name) {
 	event_name->func_to_compare = cmp1;
 	event_name->cmp2 = cmp2;
 	event_name->sign = sign_input;
 }
 
-void set_condition(status_t rocket_status, status_t status_to_compare,
+void set_condition(status_t status_to_compare,
 		compare_t sign_input, _event_t* event_name) {
-	event_name->current_status = rocket_status;
 	event_name->status = status_to_compare;
 	event_name->sign = sign_input;
 }
@@ -156,45 +156,45 @@ void run() {
 	for (unsigned char i = 0; i < events || getStatus() == ROCKET_ABORT; i++) {
 		switch (sequence[i].sign) {
 			case EQUAL:
-			if ((*(sequence[i].func_to_compare)) () == sequence[i].cmp2) {
+			if (abs((*(sequence[i].func_to_compare)) () - sequence[i].cmp2) <= TIMER_ERROR) {
 				if(getStatus() != ROCKET_ABORT) exec_event(sequence[i]);
 			}
-			if (sequence[i].current_status == sequence[i].status) {
+			if (_status == sequence[i].status) {
 				exec_event(sequence[i]);
 			}
 			break;
 			
 			case GREATER_THAN:
-			if ((*(sequence[i].func_to_compare)) () > sequence[i].cmp2 || 
-			    sequence[i].current_status > sequence[i].status) {
+			if ((*(sequence[i].func_to_compare)) () > (sequence[i].cmp2 + TIMER_ERROR) || 
+			    _status > sequence[i].status) {
 				if(getStatus() != ROCKET_ABORT) exec_event(sequence[i]);
 			}
 			break;
 			
 			case SMALLER_THAN:
-			if ((*(sequence[i].func_to_compare)) () < sequence[i].cmp2 || 
-			    sequence[i].current_status < sequence[i].status) {
+			if ((*(sequence[i].func_to_compare)) () < (sequence[i].cmp2 - TIMER_ERROR) || 
+			    _status < sequence[i].status) {
 				if(getStatus() != ROCKET_ABORT) exec_event(sequence[i]);
 			}
 			break;
 			
 			case GREATER_THAN_EQUAL_TO:
-			if ((*(sequence[i].func_to_compare)) () >= sequence[i].cmp2 || 
-			    sequence[i].current_status >= sequence[i].status) {
+			if ((*(sequence[i].func_to_compare)) () >= (sequence[i].cmp2 + TIMER_ERROR) || 
+			    _status >= sequence[i].status) {
 				if(getStatus() != ROCKET_ABORT) exec_event(sequence[i]);
 			}
 			break;
 			
 			case SMALLER_THAN_EQUAL_TO:
-			if ((*(sequence[i].func_to_compare)) () <= sequence[i].cmp2 || 
-			    sequence[i].current_status <= sequence[i].status) {
+			if ((*(sequence[i].func_to_compare)) () <= (sequence[i].cmp2 - TIMER_ERROR) || 
+			    _status <= sequence[i].status) {
 				if(getStatus() != ROCKET_ABORT) exec_event(sequence[i]);
 			}
 			break;
 			
 			case NOT_EQUAL:
-			if ((*(sequence[i].func_to_compare)) () != sequence[i].cmp2 || 
-			    sequence[i].current_status != sequence[i].status) {
+			if (abs((*(sequence[i].func_to_compare)) () - sequence[i].cmp2) > TIMER_ERROR || 
+			    _status != sequence[i].status) {
 				if(getStatus() != ROCKET_ABORT) exec_event(sequence[i]);
 			}
 			break;
@@ -203,7 +203,7 @@ void run() {
 	}
 	
 	if (getStatus() != ROCKET_ABORT) {
-		delay(4);
+		delay(1);
 	}
 }
 
