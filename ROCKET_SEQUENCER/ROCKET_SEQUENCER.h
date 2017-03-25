@@ -11,7 +11,7 @@
 #ifndef ROCKET_SEQUENCER_H
 #define ROCKET_SEQUENCER_H
 
-
+// this is a test comment
 typedef short (*func_compare_t) (void);
 typedef void (*function_noarg_t) (void); 		
 typedef void (*function_onearg_t) (unsigned short);
