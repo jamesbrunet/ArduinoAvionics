@@ -9,8 +9,8 @@ void setup() {
   pinMode(13,OUTPUT);
   digitalWrite(13,LOW);
   initialize(1);
-  loadSequence(&sequence[0],&led_test,_status);
-  set_condition(&getTimer,10000,EQUAL,&sequence[0]);
+  loadSequence(0,&led_test,_status);
+  set_condition(&getTimer,10000,EQUAL,0);
 }
 
 void loop() {

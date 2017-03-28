@@ -16,10 +16,10 @@
 #define TIMER_ERROR 10 // set timer tolerance to 10ms
 
 // variable definitions
-_event_t* sequence = NULL;
-unsigned char events = 0;
-status_t _status = ROCKET_GROUND;
-short timer = 0;
+_event_t* sequence;
+unsigned char events;
+status_t _status;
+short timer;
 
 //*******************************
 // GET the status of the rocket
@@ -45,48 +45,48 @@ void initialize(unsigned char stage_num) {
 	events = stage_num;
 	sequence = new _event_t[stage_num];
 	setStatus(ROCKET_GROUND); // NO MISFIRE HAPPENING
+	timer = 0;
 }
 
 //*******************************
 
 
 
-//status_t Rocket::getStatus() {return this->_status;} // get the rocket's status
 
 //*******************************
 // several overloads to associate a function (returns nothing and takes
 // one/two arguments of unsigned short type/nothing at all) with the event or
 // just to set the rocket status
 
-void loadSequence(_event_t* event_name, function_2arg_t action, unsigned short arg1, unsigned short arg2,
+void loadSequence(unsigned stage_num, function_2arg_t action, unsigned short arg1, unsigned short arg2,
 			  status_t status_to_trigger ) { // load a function onto the sequencer (with two arguments)
 	
-	event_name->argc = 2;
-	event_name->function_twoarg = action;
-	event_name->arg1 = arg1;
-	event_name->arg2 = arg2;
+	sequence[stage_num].argc = 2;
+	sequence[stage_num].function_twoarg = action;
+	sequence[stage_num].arg1 = arg1;
+	sequence[stage_num].arg2 = arg2;
 	setStatus(status_to_trigger);
 }
 
-void loadSequence(_event_t* event_name, function_onearg_t action, unsigned short arg1,
+void loadSequence(unsigned stage_num, function_onearg_t action, unsigned short arg1,
 			  status_t status_to_trigger ){ //load a function with one argument
-	event_name->argc = 1;
-	event_name->function_onearg = action;
-	event_name->arg1 = arg1;
+	sequence[stage_num].argc = 1;
+	sequence[stage_num].function_onearg = action;
+	sequence[stage_num].arg1 = arg1;
 	setStatus(status_to_trigger);
 }
 
-void loadSequence(_event_t* event_name, function_noarg_t action,
+void loadSequence(unsigned stage_num, function_noarg_t action,
 			  status_t status_to_trigger ){ //load a function with no argument
-	event_name->argc = 0;
-	event_name->function_noarg = action;
+	sequence[stage_num].argc = 0;
+	sequence[stage_num].function_noarg = action;
 	setStatus(status_to_trigger);
 }
 
-void loadSequence(_event_t* event_name,
+void loadSequence(unsigned stage_num,
 			  status_t status_to_trigger ) {//just setting a flag
-	event_name->argc = 0;
-	event_name->function_noarg = NULL;
+	sequence[stage_num].argc = 0;
+	sequence[stage_num].function_noarg = NULL;
 	setStatus(status_to_trigger);
 }
 
@@ -97,16 +97,16 @@ void loadSequence(_event_t* event_name,
 // using unsigned shorts or statuses (sorry, only one condition can be put in)
 
 void set_condition(func_compare_t cmp1, short cmp2,
-			   compare_t sign_input, _event_t* event_name) {
-	event_name->func_to_compare = cmp1;
-	event_name->cmp2 = cmp2;
-	event_name->sign = sign_input;
+			   compare_t sign_input, unsigned stage_num) {
+	sequence[stage_num].func_to_compare = cmp1;
+	sequence[stage_num].cmp2 = cmp2;
+	sequence[stage_num].sign = sign_input;
 }
 
 void set_condition(status_t status_to_compare,
-		compare_t sign_input, _event_t* event_name) {
-	event_name->status = status_to_compare;
-	event_name->sign = sign_input;
+		compare_t sign_input, unsigned stage_num) {
+	sequence[stage_num].status = status_to_compare;
+	sequence[stage_num].sign = sign_input;
 }
 //*******************************
 
