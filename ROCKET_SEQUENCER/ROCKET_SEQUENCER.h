@@ -49,13 +49,13 @@ extern status_t _status;
 extern short timer; // the rocket sequencer timer in seconds (both count down and count up)
 extern void initialize(unsigned char stages); //define rocket stages 
 extern void loadSequence(unsigned stage_num, function_2arg_t action, unsigned short arg1, unsigned short arg2,
-		status_t status_to_trigger ); // load a function onto the sequencer
+		status_t status_to_trigger = _status); // load a function onto the sequencer
 extern void loadSequence(unsigned stage_num, function_onearg_t action, unsigned short arg1,
-		status_t status_to_trigger ); //load a function with one argument
+		status_t status_to_trigger = _status); //load a function with one argument
 extern void loadSequence(unsigned stage_num, function_noarg_t action,
-		status_t status_to_trigger ); //load a function with no argument
+		status_t status_to_trigger = _status); //load a function with no argument
 extern void loadSequence(unsigned stage_num, 
-		status_t status_to_trigger ); /*
+		status_t status_to_trigger = _status); /*
 			  		      * also, a neat feature: when combined with 
 			  		      * set_condition() and no function 
 			  		      * is defined, it will just set flag when a 
@@ -67,7 +67,7 @@ extern void set_condition(func_compare_t cmp1, short cmp2,
 		compare_t sign_input, unsigned stage_num); // set the event's starting condition
 extern void set_condition(status_t status_to_compare,
 		compare_t sign_input, unsigned stage_num); //function overload for statuses
-extern void run(); // start the sequencer (THE FLIGHT COMPUTER HAS TAKEN OVER THE COUNTDOWN)
+extern void start(); // start the sequencer (THE FLIGHT COMPUTER HAS TAKEN OVER THE COUNTDOWN)
 extern status_t getStatus(); // GET the status of the rocket (as defined in enum status_t)
 extern void setStatus(status_t status); // set the status of the rocket
 extern short getTimer(); // get the time in milliseconds from the rocket timer

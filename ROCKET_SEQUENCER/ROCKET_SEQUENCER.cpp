@@ -139,8 +139,9 @@ void exec_event(_event_t event_name) { // execute the function predefined in loa
 // the only statement to be put in loop(). other statements in the library goes to setup()
 // provides countdown and only executes crucial commands in the event of ROCKET_ABORT
 
-void run() {
+void start() {
 	timer = millis();
+	//future implementation (hopefully)
 /*
 	if (getStatus() == ROCKET_GROUND) {
 		delay(1000);

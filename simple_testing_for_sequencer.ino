@@ -9,7 +9,7 @@ void setup() {
   pinMode(13,OUTPUT);
   digitalWrite(13,LOW);
   initialize(1);
-  loadSequence(0,&led_test,_status);
+  loadSequence(0,&led_test);
   set_condition(&getTimer,10000,EQUAL,0);
 }
 
