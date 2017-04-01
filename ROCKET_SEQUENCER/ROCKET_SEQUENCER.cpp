@@ -154,7 +154,7 @@ void start() {
 	}
 	*/
 	
-	for (unsigned char i = 0; i < events || getStatus() == ROCKET_ABORT; i++) {
+	for (unsigned char i = 0; i < events/* || getStatus() == ROCKET_ABORT*/; i++) {
 		switch (sequence[i].sign) {
 			case EQUAL:
 			if (abs((*(sequence[i].func_to_compare)) () - sequence[i].cmp2) <= TIMER_ERROR) {
@@ -202,10 +202,12 @@ void start() {
 		}
 		
 	}
-	
+	/*
 	if (getStatus() != ROCKET_ABORT) {
 		delay(1);
 	}
+	*/
+	delay(1);
 }
 
 short getTimer() {
