@@ -12,7 +12,7 @@
 #define ROCKET_SEQUENCER_H
 
 // this is a test comment
-typedef short (*func_compare_t) (void);
+typedef unsigned short (*func_compare_t) (void);
 typedef void (*function_noarg_t) (void); 		
 typedef void (*function_onearg_t) (unsigned short);
 typedef void (*function_2arg_t) (unsigned short, unsigned short);
@@ -46,8 +46,13 @@ typedef struct { // pointers to functions to call before and up to rocket's each
 extern _event_t* sequence;
 extern unsigned char events;
 extern status_t _status;
-extern short timer; // the rocket sequencer timer in seconds (both count down and count up)
-extern void initialize(unsigned char stages); //define rocket stages 
+extern unsigned long trigger_zero;//record rocket start time (in respect to program's start time)
+extern unsigned short countdown_time;//countdown time (in milliseconds)
+extern int triggerPin;
+extern unsigned short timer; // the rocket sequencer timer in milliseconds (both count down and count up)
+
+extern void initialize(unsigned char stages, int trigger_pin = -1); //define rocket stages and trigger pin
+extern void setCountdownTime(unsigned short time); // set countdown time(in milliseconds)
 extern void loadSequence(unsigned stage_num, function_2arg_t action, unsigned short arg1, unsigned short arg2,
 		status_t status_to_trigger = _status); // load a function onto the sequencer
 extern void loadSequence(unsigned stage_num, function_onearg_t action, unsigned short arg1,
@@ -70,7 +75,7 @@ extern void set_condition(status_t status_to_compare,
 extern void start(); // start the sequencer (THE FLIGHT COMPUTER HAS TAKEN OVER THE COUNTDOWN)
 extern status_t getStatus(); // GET the status of the rocket (as defined in enum status_t)
 extern void setStatus(status_t status); // set the status of the rocket
-extern short getTimer(); // get the time in milliseconds from the rocket timer
+extern unsigned short getTimer(); // get the time in milliseconds from the rocket timer
 
 
 

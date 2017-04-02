@@ -13,13 +13,15 @@
 #include "ROCKET_SEQUENCER.h"
 #undef NULL
 #define NULL 0
-#define TIMER_ERROR 10 // set timer tolerance to 10ms
 
 // variable definitions
 _event_t* sequence;
 unsigned char events;
 status_t _status;
-short timer;
+unsigned short timer;
+unsigned long trigger_zero;//record trigger start time (in respect to program's start time)
+unsigned short countdown_time;
+int triggerPin;
 
 //*******************************
 // GET the status of the rocket
@@ -39,17 +41,26 @@ void setStatus(status_t status) {
 //*******************************
 
 //*******************************
-//Initializer, set countdown time and number of events
+//Initializer, set trigger pin and number of events
 
-void initialize(unsigned char stage_num) {
+void initialize(unsigned char stage_num, int trigger_pin) {
 	events = stage_num;
 	sequence = new _event_t[stage_num];
 	setStatus(ROCKET_GROUND); // NO MISFIRE HAPPENING
 	timer = 0;
+	countdown_time = 0;
+	triggerPin = trigger_pin;
+	if (trigger_pin != -1) pinMode(trigger_pin, INPUT); // if trigger pin is set, set that pin as input
 }
 
 //*******************************
 
+//*******************************
+//Set countdown time(in milliseconds)
+void setCountdownTime(unsigned short time) {
+	countdown_time = time;
+}
+//*******************************
 
 
 
@@ -140,24 +151,27 @@ void exec_event(_event_t event_name) { // execute the function predefined in loa
 // provides countdown and only executes crucial commands in the event of ROCKET_ABORT
 
 void start() {
-	timer = millis();
-	//future implementation (hopefully)
-/*
+	/* countdown and trigger portion */
 	if (getStatus() == ROCKET_GROUND) {
-		delay(1000);
+		if (triggerPin != -1) {
+			if (digitalRead(triggerPin) == HIGH)
+			setStatus(ROCKET_COUNTDOWN);
+			else trigger_zero = millis();
+		}
+		else setStatus(ROCKET_COUNTDOWN);
 		return;
 	}
 	else if (getStatus() == ROCKET_COUNTDOWN) {
-		//timer -= 1;
-		if (timer == 0) setStatus(STAGE_START);
-		else {delay(1000); return;}
+		if (millis() - trigger_zero >= countdown_time) setStatus(STAGE_START);
+		else {delay(1); return;}
 	}
-	*/
 	
-	for (unsigned char i = 0; i < events /*|| getStatus() == ROCKET_ABORT*/; i++) {
+	timer = millis() - countdown_time - trigger_zero;
+	for (unsigned char i = 0; i < events && //when rocket is not grounded/armed/in countdown
+		!(getStatus() == ROCKET_GROUND || getStatus() == ROCKET_COUNTDOWN); i++) {
 		switch (sequence[i].sign) {
 			case EQUAL:
-			if (abs((*(sequence[i].func_to_compare)) () - sequence[i].cmp2) <= TIMER_ERROR) {
+			if ((*(sequence[i].func_to_compare)) () == sequence[i].cmp2) {
 				if(getStatus() != ROCKET_ABORT) exec_event(sequence[i]);
 			}
 			if (_status == sequence[i].status) {
@@ -166,35 +180,35 @@ void start() {
 			break;
 			
 			case GREATER_THAN:
-			if ((*(sequence[i].func_to_compare)) () > (sequence[i].cmp2 + TIMER_ERROR) || 
+			if ((*(sequence[i].func_to_compare)) () > sequence[i].cmp2 || 
 			    _status > sequence[i].status) {
 				if(getStatus() != ROCKET_ABORT) exec_event(sequence[i]);
 			}
 			break;
 			
 			case SMALLER_THAN:
-			if ((*(sequence[i].func_to_compare)) () < (sequence[i].cmp2 - TIMER_ERROR) || 
+			if ((*(sequence[i].func_to_compare)) () < sequence[i].cmp2 || 
 			    _status < sequence[i].status) {
 				if(getStatus() != ROCKET_ABORT) exec_event(sequence[i]);
 			}
 			break;
 			
 			case GREATER_THAN_EQUAL_TO:
-			if ((*(sequence[i].func_to_compare)) () >= (sequence[i].cmp2 + TIMER_ERROR) || 
+			if ((*(sequence[i].func_to_compare)) () >= sequence[i].cmp2 || 
 			    _status >= sequence[i].status) {
 				if(getStatus() != ROCKET_ABORT) exec_event(sequence[i]);
 			}
 			break;
 			
 			case SMALLER_THAN_EQUAL_TO:
-			if ((*(sequence[i].func_to_compare)) () <= (sequence[i].cmp2 - TIMER_ERROR) || 
+			if ((*(sequence[i].func_to_compare)) () <= sequence[i].cmp2 || 
 			    _status <= sequence[i].status) {
 				if(getStatus() != ROCKET_ABORT) exec_event(sequence[i]);
 			}
 			break;
 			
 			case NOT_EQUAL:
-			if (abs((*(sequence[i].func_to_compare)) () - sequence[i].cmp2) > TIMER_ERROR || 
+			if ((*(sequence[i].func_to_compare)) () != sequence[i].cmp2 || 
 			    _status != sequence[i].status) {
 				if(getStatus() != ROCKET_ABORT) exec_event(sequence[i]);
 			}
@@ -202,16 +216,12 @@ void start() {
 		}
 		
 	}
-
-	/*
-	if (getStatus() != ROCKET_ABORT) {
-		delay(1);
-	}
-	*/
+	
+	
 	delay(1);
 }
 
-short getTimer() {
+unsigned short getTimer() {
   return timer;
 }
 //*******************************
