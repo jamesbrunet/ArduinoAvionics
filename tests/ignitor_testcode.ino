@@ -25,9 +25,9 @@ void setup(){
   pinMode(FIRE_PIN,OUTPUT);
   setCountdownTime(0);
   loadSequence(0,&fireStart);
-  set_condition(&getTimer,TIME * 1000,EQUAL,0);
+  set_condition(&getTimer,TIME * 1000,AT,0);
   loadSequence(1,&fireStop);
-  set_condition(&getTimer,(TIME*1000+FIRE_DURATION),EQUAL,1);
+  set_condition(&getTimer,(TIME*1000+FIRE_DURATION),AT,1);
 }
 
 void loop(){

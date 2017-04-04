@@ -10,7 +10,7 @@ void setup() {
   digitalWrite(13,LOW);
   initialize(1);
   loadSequence(0,&led_test);
-  set_condition(&getTimer,10000,EQUAL,0);
+  set_condition(&getTimer,10000,AT,0);
 }
 
 void loop() {

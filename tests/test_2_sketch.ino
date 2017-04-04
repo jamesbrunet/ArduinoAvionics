@@ -27,11 +27,11 @@ void setup() {
   Serial.begin(9600); // serial connection baud rate 9600
   initialize(3);
   loadSequence(0,&abort_test);
-  set_condition(ROCKET_ABORT,EQUAL,0);
+  set_condition(ROCKET_ABORT,AT,0);
   loadSequence(1,&launch_print);
-  set_condition(&getTimer,0,EQUAL,1);
+  set_condition(&getTimer,0,AT,1);
   loadSequence(2,ROCKET_ABORT);
-  set_condition(&getTimer,10000,EQUAL,2);
+  set_condition(&getTimer,10000,AT,2);
 }
 
 void loop() {

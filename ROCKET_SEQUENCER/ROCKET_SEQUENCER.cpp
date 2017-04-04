@@ -170,7 +170,7 @@ void start() {
 	for (unsigned char i = 0; i < events && //when rocket is not grounded/armed/in countdown
 		!(getStatus() == ROCKET_GROUND || getStatus() == ROCKET_COUNTDOWN); i++) {
 		switch (sequence[i].sign) {
-			case EQUAL:
+			case AT:
 			if ((*(sequence[i].func_to_compare)) () == sequence[i].cmp2) {
 				if(getStatus() != ROCKET_ABORT) exec_event(sequence[i]);
 			}
@@ -179,40 +179,19 @@ void start() {
 			}
 			break;
 			
-			case GREATER_THAN:
+			case FROM:
 			if ((*(sequence[i].func_to_compare)) () > sequence[i].cmp2 || 
 			    _status > sequence[i].status) {
 				if(getStatus() != ROCKET_ABORT) exec_event(sequence[i]);
 			}
 			break;
 			
-			case SMALLER_THAN:
+			case UNTIL:
 			if ((*(sequence[i].func_to_compare)) () < sequence[i].cmp2 || 
 			    _status < sequence[i].status) {
 				if(getStatus() != ROCKET_ABORT) exec_event(sequence[i]);
 			}
-			break;
 			
-			case GREATER_THAN_EQUAL_TO:
-			if ((*(sequence[i].func_to_compare)) () >= sequence[i].cmp2 || 
-			    _status >= sequence[i].status) {
-				if(getStatus() != ROCKET_ABORT) exec_event(sequence[i]);
-			}
-			break;
-			
-			case SMALLER_THAN_EQUAL_TO:
-			if ((*(sequence[i].func_to_compare)) () <= sequence[i].cmp2 || 
-			    _status <= sequence[i].status) {
-				if(getStatus() != ROCKET_ABORT) exec_event(sequence[i]);
-			}
-			break;
-			
-			case NOT_EQUAL:
-			if ((*(sequence[i].func_to_compare)) () != sequence[i].cmp2 || 
-			    _status != sequence[i].status) {
-				if(getStatus() != ROCKET_ABORT) exec_event(sequence[i]);
-			}
-			break;
 		}
 		
 	}

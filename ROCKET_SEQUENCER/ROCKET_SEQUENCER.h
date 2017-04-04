@@ -25,8 +25,7 @@ enum status_t {ROCKET_GROUND, //rocket is safed
 	      ROCKET_ABORT // the launch is aborted
 }; 
 
-enum compare_t {EQUAL, NOT_EQUAL, GREATER_THAN, GREATER_THAN_EQUAL_TO,
-	      SMALLER_THAN, SMALLER_THAN_EQUAL_TO};
+enum compare_t {AT, FROM, UNTIL};
 
 
 
