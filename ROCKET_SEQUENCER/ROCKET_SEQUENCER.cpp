@@ -18,7 +18,7 @@
 _event_t* sequence;
 unsigned char events;
 status_t _status;
-unsigned short timer;
+unsigned long timer;
 unsigned long trigger_zero;//record trigger start time (in respect to program's start time)
 unsigned short countdown_time;
 int triggerPin;
@@ -76,7 +76,7 @@ void loadSequence(unsigned stage_num, function_2arg_t action, unsigned short arg
 	sequence[stage_num].function_twoarg = action;
 	sequence[stage_num].arg1 = arg1;
 	sequence[stage_num].arg2 = arg2;
-	setStatus(status_to_trigger);
+	sequence[stage_num].status_to_trigger = status_to_trigger;
 }
 
 void loadSequence(unsigned stage_num, function_onearg_t action, unsigned short arg1,
@@ -84,21 +84,21 @@ void loadSequence(unsigned stage_num, function_onearg_t action, unsigned short a
 	sequence[stage_num].argc = 1;
 	sequence[stage_num].function_onearg = action;
 	sequence[stage_num].arg1 = arg1;
-	setStatus(status_to_trigger);
+	sequence[stage_num].status_to_trigger = status_to_trigger;
 }
 
 void loadSequence(unsigned stage_num, function_noarg_t action,
 			  status_t status_to_trigger ){ //load a function with no argument
 	sequence[stage_num].argc = 0;
 	sequence[stage_num].function_noarg = action;
-	setStatus(status_to_trigger);
+	sequence[stage_num].status_to_trigger = status_to_trigger;
 }
 
 void loadSequence(unsigned stage_num,
 			  status_t status_to_trigger ) {//just setting a flag
 	sequence[stage_num].argc = 0;
 	sequence[stage_num].function_noarg = NULL;
-	setStatus(status_to_trigger);
+	sequence[stage_num].status_to_trigger = status_to_trigger;
 }
 
 //*******************************
@@ -107,7 +107,7 @@ void loadSequence(unsigned stage_num,
 // the function defines the condition that the function executes
 // using unsigned shorts or statuses (sorry, only one condition can be put in)
 
-void set_condition(func_compare_t cmp1, short cmp2,
+void set_condition(func_compare_t cmp1, unsigned long cmp2,
 			   compare_t sign_input, unsigned stage_num) {
 	sequence[stage_num].func_to_compare = cmp1;
 	sequence[stage_num].cmp2 = cmp2;
@@ -142,7 +142,7 @@ void exec_event(_event_t event_name) { // execute the function predefined in loa
 		setStatus(ROCKET_ABORT); // set the abort flag if more than two arguments
 		break;
 	}
-
+	setStatus(event_name.status_to_trigger);
 }
 //*******************************
 
@@ -163,7 +163,8 @@ void start() {
 	}
 	else if (getStatus() == ROCKET_COUNTDOWN) {
 		if (millis() - trigger_zero >= countdown_time) setStatus(STAGE_START);
-		else {delay(1); return;}
+		else delay(1);
+		return;
 	}
 	
 	timer = millis() - countdown_time - trigger_zero;
@@ -200,7 +201,7 @@ void start() {
 	delay(1);
 }
 
-unsigned short getTimer() {
+unsigned long getTimer() {
   return timer;
 }
 //*******************************
